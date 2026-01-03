@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "859986520938",
+    "project_id": "delta-dai-bim",
+    "storage_bucket": "delta-dai-bim.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:859986520938:android:5cb9f9e0b47908c5765313",
+        "android_client_info": {
+          "package_name": "com.example.delta_bim"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKMb2TTA_Q5sowVkyQa7s1-SkAfzaiuMY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:859986520938:android:a018b274d37d23e5765313",
+        "android_client_info": {
+          "package_name": "com.example.delta_dai_bim"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKMb2TTA_Q5sowVkyQa7s1-SkAfzaiuMY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:859986520938:android:16d091d967a7d629765313",
+        "android_client_info": {
+          "package_name": "com.example.delta_dai_bim_"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKMb2TTA_Q5sowVkyQa7s1-SkAfzaiuMY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
