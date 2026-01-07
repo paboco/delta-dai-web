@@ -1,4 +1,4 @@
-import 'package:delta_dai_bim_/services/external/whatsapp_service.dart';
+import 'package:delta_dai_bim_web/services/external/whatsapp_service.dart';
 import 'package:flutter/material.dart';
 import '../../core/app_colors.dart';
 

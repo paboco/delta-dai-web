@@ -1,4 +1,4 @@
-import 'package:delta_dai_bim_/core/app_colors.dart';
+import 'package:delta_dai_bim_web/core/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class AppLogo extends StatelessWidget {

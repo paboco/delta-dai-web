@@ -1,4 +1,4 @@
-import 'package:delta_dai_bim_/core/constants/app_constans.dart';
+import 'package:delta_dai_bim_web/core/constants/app_constans.dart';
 import 'package:flutter/foundation.dart';
 import 'package:url_launcher/url_launcher.dart';
 

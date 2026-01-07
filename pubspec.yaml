@@ -1,4 +1,4 @@
-name: delta_dai_bim_
+name: delta_dai_bim_web
 description: "Proyecto Delta Dai - Panel de Administración"
 publish_to: 'none'
 version: 1.0.0+1

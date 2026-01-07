@@ -1,6 +1,6 @@
 {
-    "name": "delta_dai_bim_",
-    "short_name": "delta_dai_bim_",
+    "name": "delta_dai_bim_web",
+    "short_name": "delta_dai_bim_web",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

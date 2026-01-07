@@ -1,4 +1,4 @@
-import 'package:delta_dai_bim_/services/external/whatsapp_service.dart';
+import 'package:delta_dai_bim_web/services/external/whatsapp_service.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // Import agregado
 import '../../models/house_model.dart';

@@ -1,15 +1,16 @@
-import 'package:delta_dai_bim_/pages/admin/upload_model_page.dart';
-import 'package:delta_dai_bim_/pages/models_page.dart';
-import 'package:delta_dai_bim_/services/auth_guard.dart';
+import 'package:delta_dai_bim_web/pages/admin/upload_model_page.dart';
+import 'package:delta_dai_bim_web/pages/admin_page.dart';
+import 'package:delta_dai_bim_web/pages/models_page.dart';
+import 'package:delta_dai_bim_web/services/auth_guard.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'firebase_options.dart';
-import 'package:delta_dai_bim_/pages/home_page.dart';
-import 'package:delta_dai_bim_/pages/admin_page.dart';
+
 // SERVICIOS
 
 // PÁGINAS PÚBLICAS
+import 'pages/home_page.dart';
 import 'pages/login_page.dart';
 
 // PÁGINAS ADMINISTRATIVAS (Dentro de la carpeta admin)

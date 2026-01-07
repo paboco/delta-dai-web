@@ -28,7 +28,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:859986520938:android:a018b274d37d23e5765313",
         "android_client_info": {
-          "package_name": "com.example.delta_dai_bim"
+          "package_name": "com.example.delta_dai_bim_web"
         }
       },
       "oauth_client": [],
@@ -47,7 +47,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:859986520938:android:16d091d967a7d629765313",
         "android_client_info": {
-          "package_name": "com.example.delta_dai_bim_"
+          "package_name": "com.example.delta_dai_bim_web"
         }
       },
       "oauth_client": [],
