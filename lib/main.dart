@@ -12,6 +12,7 @@ import 'firebase_options.dart';
 // PÁGINAS PÚBLICAS
 import 'pages/home_page.dart';
 import 'pages/login_page.dart';
+import 'pages/projects_page.dart';
 
 // PÁGINAS ADMINISTRATIVAS (Dentro de la carpeta admin)
 
@@ -46,11 +47,9 @@ class MyApp extends StatelessWidget {
         '/': (context) => const HomePage(),
         '/login': (context) => const LoginPage(),
         '/models': (context) => ModelsPage(),
-
-        // SECCIÓN PROTEGIDA: Aquí unifiqué tus rutas de admin
-        // Se eliminó la duplicidad de '/admin' que causaba el error amarillo
         '/admin': (context) => const AuthGuard(child: AdminPage()),
         '/upload-model': (context) => const AuthGuard(child: UploadModelPage()),
+        '/projects': (context) => ProjectsPage(),
       },
     );
   }

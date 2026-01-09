@@ -15,9 +15,14 @@ class InfoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final bool isDesktop = size.width > 900;
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 20),
+      padding: EdgeInsets.symmetric(
+        vertical: 80,
+        horizontal: isDesktop ? size.width * 0.2 : 25,
+      ),
       color: backgroundColor,
       child: Column(
         children: [
@@ -31,11 +36,16 @@ class InfoSection extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 800),
+            constraints: const BoxConstraints(maxWidth: 900),
             child: Text(
               content,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 18, height: 1.6),
+              style: const TextStyle(
+                fontSize: 20,
+                height: 1.8,
+                color: AppColors.greyDark,
+                letterSpacing: 0.5,
+              ),
             ),
           ),
         ],

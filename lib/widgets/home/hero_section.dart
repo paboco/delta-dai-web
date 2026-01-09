@@ -1,62 +1,122 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../../core/app_colors.dart';
-import '../../services/external/whatsapp_service.dart';
+import '../shared/app_logo.dart'; // Asegúrate de que la ruta sea correcta
 
 class HeroSection extends StatelessWidget {
   const HeroSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final whatsappService = WhatsAppService();
-    return Container(
-      height: 500,
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isMobile = screenWidth < 700;
+
+    return SizedBox(
+      height: isMobile ? 600 : 650,
       width: double.infinity,
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          // Aquí usaremos una de tus fotos de casas de Firebase Storage
-          image: NetworkImage(
-            'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?q=80&w=1000',
+      child: Stack(
+        children: [
+          // 1. FONDO (Se mantiene igual)
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/fondo.jpeg',
+              fit: BoxFit.cover,
+              alignment: const Alignment(0, -0.75),
+            ),
           ),
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: Container(
-        color: Colors.black.withValues(
-          alpha: 200,
-        ), // Capa oscura para que se lea el texto
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              "DISEÑO Y CONSTRUCCIÓN BIM",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 40,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              "Modelos de casas vanguardistas en Guatemala",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () => whatsappService.launchWhatsApp(isGeneral: true),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryRed,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 30,
-                  vertical: 15,
+
+          // 2. DIFUMINADO GENERAL DEL FONDO
+          Positioned.fill(
+            child: ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(
+                  sigmaX: 4.0,
+                  sigmaY: 4.0,
+                ), // Un poco menos de blur general
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.3),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withValues(alpha: 0.7),
+                        Colors.black,
+                      ],
+                      stops: const [0.0, 0.7, 1.0],
+                    ),
+                  ),
                 ),
               ),
-              child: const Text(
-                "COTIZAR AHORA",
-                style: TextStyle(color: Colors.white),
+            ),
+          ),
+
+          // 3. LOGO CENTRAL CON EFECTO CRISTAL (Aquí usamos la Clase)
+          Positioned(
+            top: isMobile ? 140 : 180,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(25),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 30,
+                      vertical: 20,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(
+                        alpha: 0.1,
+                      ), // Capa de claridad
+                      borderRadius: BorderRadius.circular(25),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        width: 1.5,
+                      ),
+                    ),
+                    // USAMOS LA CLASE OPTIMIZADA
+                    child: AppLogo(height: isMobile ? 120 : 200),
+                  ),
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+
+          // 4. TEXTOS (Se mantienen igual)
+          Positioned(
+            bottom: 60,
+            left: 20,
+            right: 20,
+            child: Column(
+              children: [
+                Text(
+                  "DISEÑO Y CONSTRUCCIÓN BIM",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: isMobile ? 26 : 52,
+                    fontWeight: FontWeight.w900,
+                    shadows: const [
+                      Shadow(color: Colors.black, blurRadius: 15),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  "Innovación y precisión en cada metro cuadrado",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.9),
+                    fontSize: isMobile ? 16 : 24,
+                    fontWeight: FontWeight.w300,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

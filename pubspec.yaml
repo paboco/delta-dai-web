@@ -32,5 +32,5 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   # Si tienes imágenes en una carpeta assets, descomenta las siguientes líneas:
-  # assets:
-  #   - assets/
+  assets:
+    - assets/images/

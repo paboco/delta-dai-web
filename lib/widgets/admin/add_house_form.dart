@@ -10,7 +10,7 @@ class AddHouseForm extends StatelessWidget {
   final String? fileName;
   final VoidCallback onPickImage;
   final VoidCallback onSave;
-  final String? editingId; // null = nuevo, no-null = editando
+  final String? editingId;
   final VoidCallback onCancel;
 
   const AddHouseForm({
@@ -24,17 +24,16 @@ class AddHouseForm extends StatelessWidget {
     required this.onSave,
     required this.editingId,
     required this.onCancel,
+    // Eliminamos onReset y formKey de aquí porque se manejan desde el padre
   });
 
   @override
   Widget build(BuildContext context) {
-    // Variable booleana para simplificar la lectura
     final isEditing = editingId != null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Encabezado dinámico
         if (isEditing)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -64,24 +63,45 @@ class AddHouseForm extends StatelessWidget {
           ),
 
         const SizedBox(height: 20),
-        TextField(
+
+        // --- CAMPO NOMBRE ---
+        TextFormField(
           controller: nameCtrl,
           decoration: const InputDecoration(
             labelText: "Nombre del Proyecto",
             border: OutlineInputBorder(),
           ),
+          // VALIDATOR: Esto crea las letras rojas de error
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Por favor, ingresa un nombre';
+            }
+            return null;
+          },
         ),
+
         const SizedBox(height: 15),
-        TextField(
+
+        // --- CAMPO DESCRIPCIÓN ---
+        TextFormField(
           controller: descCtrl,
           decoration: const InputDecoration(
             labelText: "Descripción",
             border: OutlineInputBorder(),
           ),
           maxLines: 3,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'La descripción es obligatoria';
+            }
+            return null;
+          },
         ),
+
         const SizedBox(height: 15),
-        TextField(
+
+        // --- CAMPO PRECIO ---
+        TextFormField(
           controller: priceCtrl,
           keyboardType: TextInputType.number,
           decoration: const InputDecoration(
@@ -89,10 +109,21 @@ class AddHouseForm extends StatelessWidget {
             border: OutlineInputBorder(),
             prefixText: "Q ",
           ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Ingresa un monto';
+            }
+            // Validamos que sea un número real (Jerga: Numeric Parsing)
+            final isNumber = double.tryParse(value);
+            if (isNumber == null) {
+              return 'Ingresa un monto numérico válido';
+            }
+            return null;
+          },
         ),
+
         const SizedBox(height: 20),
 
-        // Selector de Imagen
         const Text(
           "Imagen del modelo:",
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -107,6 +138,7 @@ class AddHouseForm extends StatelessWidget {
           label: Text(fileName ?? "Seleccionar Imagen desde PC"),
         ),
 
+        // Feedback visual de la imagen
         if (selectedFile != null)
           const Padding(
             padding: EdgeInsets.only(top: 8),
@@ -134,13 +166,11 @@ class AddHouseForm extends StatelessWidget {
 
         const SizedBox(height: 30),
 
-        // Botón de Acción Principal
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
             onPressed: onSave,
             style: ElevatedButton.styleFrom(
-              // Cambia color si es edición
               backgroundColor: isEditing
                   ? Colors.orange[700]
                   : AppColors.primaryRed,

@@ -12,9 +12,9 @@ class WebContent {
   // Transforma lo que viene de Firebase (Mapa) en este objeto de Flutter
   factory WebContent.fromMap(Map<String, dynamic> data) {
     return WebContent(
-      aboutUs: data['aboutUs'] ?? "Sobre nosotros...",
-      mission: data['mission'] ?? "Nuestra misión...",
-      vision: data['vision'] ?? "Nuestra visión...",
+      aboutUs: data['aboutUs'] ?? "Cargando información...",
+      mission: data['mission'] ?? "Cargando información...",
+      vision: data['vision'] ?? "Cargando información...",
     );
   }
 }

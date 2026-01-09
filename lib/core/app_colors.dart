@@ -11,6 +11,7 @@ class AppColors {
   static const Color blueAccent = Colors.blueAccent;
   static const Color greyDark = Color(0xFF424242);
   static const Color lightGrey = Color.fromARGB(255, 114, 24, 24);
+  static const Color blackgray = Color.fromARGB(0, 100, 98, 98);
 }
 
 class AppStyles {

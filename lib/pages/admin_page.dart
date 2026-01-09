@@ -1,15 +1,18 @@
+// ignore_for_file: use_build_context_synchronously
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:file_picker/file_picker.dart';
 
-// IMPORTS DE TUS ARCHIVOS (Asegúrate que las rutas sean correctas)
 import '../services/firebase_service.dart';
 import '../models/house_model.dart';
+import '../widgets/models/project_model.dart'; // Asegúrate de importar tu nuevo modelo
 import '../core/app_colors.dart';
 import '../widgets/shared/app_logo.dart';
 import '../widgets/admin/add_house_form.dart';
-import '../widgets/admin/admin_house_list.dart'; // <--- ESTE IMPORT ES VITAL
+import '../widgets/admin/admin_house_list.dart';
+import '../widgets/admin/add_project_form.dart'; // El widget que creamos antes
+import '../widgets/admin/admin_project_list.dart'; // El widget que creamos antes
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
@@ -21,18 +24,25 @@ class AdminPage extends StatefulWidget {
 class _AdminPageState extends State<AdminPage> {
   final FirebaseService _service = FirebaseService();
 
-  // Controladores
+  // --- CONTROLADORES Y LLAVES PARA CASAS ---
+  final _houseFormKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
   final _priceCtrl = TextEditingController();
 
-  // Variables de estado
+  // --- CONTROLADORES Y LLAVES PARA PROYECTOS ---
+  final _projectFormKey = GlobalKey<FormState>();
+  final _pTitleCtrl = TextEditingController();
+  final _pLocationCtrl = TextEditingController();
+  final _pDescCtrl = TextEditingController();
+
+  // VARIABLES COMPARTIDAS (Se limpian al cambiar o guardar)
   Uint8List? _selectedFile;
   String? _fileName;
-  String? _editingId; // null = Creando, !null = Editando
+  String? _editingId;
 
-  // Función para cargar datos en el formulario (El puente)
-  void _setupEdit(HouseModel house) {
+  // --- LÓGICA DE EDICIÓN ---
+  void _setupEditHouse(HouseModel house) {
     setState(() {
       _editingId = house.id;
       _nameCtrl.text = house.name;
@@ -41,11 +51,20 @@ class _AdminPageState extends State<AdminPage> {
       _selectedFile = null;
       _fileName = "Imagen actual (Toca para cambiar)";
     });
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text("Editando: ${house.name}")));
   }
 
+  void _setupEditProject(ProjectModel project) {
+    setState(() {
+      _editingId = project.id;
+      _pTitleCtrl.text = project.title;
+      _pLocationCtrl.text = project.location;
+      _pDescCtrl.text = project.description;
+      _selectedFile = null;
+      _fileName = "Imagen actual (Toca para cambiar)";
+    });
+  }
+
+  // --- MANEJO DE IMÁGENES ---
   Future<void> _handlePickImage() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.image,
@@ -59,22 +78,22 @@ class _AdminPageState extends State<AdminPage> {
     }
   }
 
-  void _handleSave() async {
-    // Si no hay archivo y no estamos editando, error
-    if (_nameCtrl.text.isEmpty ||
-        (_selectedFile == null && _editingId == null)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Completa los campos y selecciona una imagen"),
-        ),
-      );
+  // --- GUARDADO DE CASAS ---
+  void _handleSaveHouse() async {
+    if (!_houseFormKey.currentState!.validate()) return;
+    if (_selectedFile == null && _editingId == null) {
+      _showSnackBar("Por favor, selecciona una imagen");
       return;
     }
 
     try {
       String imageUrl = "";
       if (_selectedFile != null) {
-        imageUrl = await _service.uploadImage(_selectedFile!, _fileName!);
+        imageUrl = await _service.uploadImage(
+          _selectedFile!,
+          _fileName!,
+          'models',
+        );
       }
 
       final houseData = HouseModel(
@@ -86,15 +105,55 @@ class _AdminPageState extends State<AdminPage> {
       );
 
       if (_editingId != null) {
-        // Aquí llamarás a updateHouseModel en el futuro
-        debugPrint("Actualizando ID: $_editingId");
+        // await _service.updateHouseModel(houseData);
       } else {
         await _service.addHouseModel(houseData);
       }
 
+      _showSnackBar("¡Casa guardada exitosamente!");
       _resetFields();
     } catch (e) {
-      debugPrint("Error al guardar: $e");
+      _showSnackBar("Error al guardar casa: $e");
+    }
+  }
+
+  // --- GUARDADO DE PROYECTOS ---
+  void _handleSaveProject() async {
+    if (!_projectFormKey.currentState!.validate()) return;
+    if (_selectedFile == null && _editingId == null) {
+      _showSnackBar("Selecciona una foto de la obra realizada");
+      return;
+    }
+
+    try {
+      String imageUrl = "";
+      if (_selectedFile != null) {
+        imageUrl = await _service.uploadImage(
+          _selectedFile!,
+          _fileName!,
+          'projects',
+        );
+      }
+
+      final projectData = ProjectModel(
+        id: _editingId ?? '',
+        title: _pTitleCtrl.text,
+        location: _pLocationCtrl.text,
+        description: _pDescCtrl.text,
+        imageUrl: imageUrl,
+        date: DateTime.now(),
+      );
+
+      if (_editingId != null) {
+        await _service.updateProject(projectData);
+      } else {
+        await _service.addProject(projectData);
+      }
+
+      _showSnackBar("¡Historia de proyecto guardada!");
+      _resetFields();
+    } catch (e) {
+      _showSnackBar("Error al guardar proyecto: $e");
     }
   }
 
@@ -102,6 +161,9 @@ class _AdminPageState extends State<AdminPage> {
     _nameCtrl.clear();
     _descCtrl.clear();
     _priceCtrl.clear();
+    _pTitleCtrl.clear();
+    _pLocationCtrl.clear();
+    _pDescCtrl.clear();
     setState(() {
       _selectedFile = null;
       _fileName = null;
@@ -109,62 +171,123 @@ class _AdminPageState extends State<AdminPage> {
     });
   }
 
+  void _showSnackBar(String text) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        leadingWidth: 180,
-        leading: const Padding(
-          padding: EdgeInsets.only(left: 16.0),
-          child: AppLogo(height: 60),
-        ),
-        title: const Text("Panel de Control Delta Dai"),
-        backgroundColor: AppColors.greyDark,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-              if (!context.mounted) return;
-              Navigator.pushReplacementNamed(context, '/');
-            },
-          ),
-        ],
-      ),
-      body: Row(
-        children: [
-          // PANEL IZQUIERDO: Formulario
-          Container(
-            width: 400,
-            color: Colors.grey[100],
-            padding: const EdgeInsets.all(25),
-            child: AddHouseForm(
-              nameCtrl: _nameCtrl,
-              descCtrl: _descCtrl,
-              priceCtrl: _priceCtrl,
-              selectedFile: _selectedFile,
-              fileName: _fileName,
-              onPickImage: _handlePickImage,
-              onSave: _handleSave,
-              editingId:
-                  _editingId, // Le pasas la variable que ya tienes arriba
-              onCancel: _resetFields,
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          toolbarHeight: 110,
+          leadingWidth: 200,
+          leading: const Center(
+            child: Padding(
+              padding: EdgeInsets.only(left: 16.0),
+              child: AppLogoNavbar(height: 90),
             ),
           ),
+          title: const Text(
+            "Panel del Administrador",
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          centerTitle: true,
+          backgroundColor: AppColors.greyDark,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout, color: Colors.white),
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                if (!context.mounted) return;
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/',
+                  (route) => false,
+                );
+              },
+            ),
+          ],
+          bottom: const TabBar(
+            indicatorColor: AppColors.primaryRed,
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.grey,
+            tabs: [
+              Tab(icon: Icon(Icons.house), text: "MODELOS DE CASAS"),
+              Tab(
+                icon: Icon(Icons.history_edu),
+                text: "HISTORIAS DE PROYECTOS",
+              ),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            // PESTAÑA 1: GESTIÓN DE CASAS
+            _buildTabLayout(
+              form: Form(
+                key: _houseFormKey,
+                child: AddHouseForm(
+                  nameCtrl: _nameCtrl,
+                  descCtrl: _descCtrl,
+                  priceCtrl: _priceCtrl,
+                  selectedFile: _selectedFile,
+                  fileName: _fileName,
+                  onPickImage: _handlePickImage,
+                  onSave: _handleSaveHouse,
+                  editingId: _editingId,
+                  onCancel: _resetFields,
+                ),
+              ),
+              list: AdminHouseList(service: _service, onEdit: _setupEditHouse),
+            ),
 
-          // PANEL DERECHO: Lista (Aquí usamos el widget independiente)
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: AdminHouseList(
+            // PESTAÑA 2: GESTIÓN DE PROYECTOS
+            // PESTAÑA 2: GESTIÓN DE PROYECTOS
+            _buildTabLayout(
+              form: Form(
+                key: _projectFormKey,
+                child: AddProjectForm(
+                  titleCtrl: _pTitleCtrl,
+                  locationCtrl: _pLocationCtrl,
+                  descCtrl: _pDescCtrl,
+                  selectedFile: _selectedFile,
+                  fileName: _fileName,
+                  onPickImage: _handlePickImage,
+                  onSave: _handleSaveProject,
+                  editingId: _editingId,
+                  onCancel: _resetFields,
+                ),
+              ),
+              // AQUÍ CONECTAMOS LA LISTA Y LA FUNCIÓN DE EDICIÓN
+              list: AdminProjectList(
                 service: _service,
-                onEdit: _setupEdit, // <--- Conectamos la función aquí
+                onEdit:
+                    _setupEditProject, // Esto quita el warning automáticamente
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+    );
+  }
+
+  // Widget para no repetir el Row y el Container en cada Tab
+  Widget _buildTabLayout({required Widget form, required Widget list}) {
+    return Row(
+      children: [
+        Container(
+          width: 400,
+          color: Colors.grey[100],
+          padding: const EdgeInsets.all(25),
+          child: SingleChildScrollView(child: form),
+        ),
+        Expanded(
+          child: Padding(padding: const EdgeInsets.all(20), child: list),
+        ),
+      ],
     );
   }
 }
