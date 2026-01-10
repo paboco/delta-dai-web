@@ -13,9 +13,9 @@ dependencies:
   # Plugins de Web y Utilidades
   flutter_web_plugins:
     sdk: flutter
-  url_launcher: ^6.3.1
+  url_launcher: ^6.3.2
   file_picker: ^8.0.0
-  font_awesome_flutter: ^10.7.0
+  font_awesome_flutter: ^10.12.0
   cupertino_icons: ^1.0.6
 
   # Firebase
@@ -23,6 +23,7 @@ dependencies:
   firebase_auth: ^5.0.0
   cloud_firestore: ^5.0.0
   firebase_storage: ^12.0.0
+  carousel_slider: ^5.1.1
 
 dev_dependencies:
   flutter_test:
