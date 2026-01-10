@@ -62,9 +62,12 @@ class _CustomNavBarState extends State<CustomNavBar> {
                     const SizedBox(width: 50),
                   ]
                 : [
-                    IconButton(
-                      icon: const Icon(Icons.menu, color: Colors.black),
-                      onPressed: () => Scaffold.of(context).openDrawer(),
+                    // CORRECCIÓN AQUÍ: Builder permite encontrar el Scaffold padre
+                    Builder(
+                      builder: (context) => IconButton(
+                        icon: const Icon(Icons.menu, color: Colors.black),
+                        onPressed: () => Scaffold.of(context).openDrawer(),
+                      ),
                     ),
                   ],
           ),

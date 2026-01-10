@@ -6,6 +6,7 @@ import '../../../../data/services/whatsapp_service.dart';
 import '../../../../data/models/house_model.dart';
 import '../../../../core/app_colors.dart';
 import '../../../shared/custom_navbar.dart';
+import '../../../shared/custom_drawer.dart';
 import '../widgets/house_card.dart';
 
 class ModelsPage extends StatelessWidget {
@@ -16,24 +17,23 @@ class ModelsPage extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: const CustomNavBar(),
+      drawer: const CustomDrawer(),
       body: Stack(
         children: [
-          // 1. FONDO PREMIUM
+          // FONDO CON GRADIENTE HUESO
           Container(
             decoration: BoxDecoration(
               gradient: RadialGradient(
                 center: Alignment.center,
                 radius: 1.2,
                 colors: [
-                  Colors.white,
-                  const Color(0xFFF7F7F7),
+                  const Color(0xFFFAF9F6),
+                  const Color(0xFFF9F6F2),
                   AppColors.primaryRed.withOpacity(0.04),
                 ],
               ),
             ),
           ),
-
-          // 2. CONTENIDO PRINCIPAL
           SingleChildScrollView(
             child: Column(
               children: [
@@ -63,12 +63,11 @@ class ModelsPage extends StatelessWidget {
                     const Text(
                       "Diseños arquitectónicos con precisión BIM para su hogar",
                       style: TextStyle(color: Colors.grey, fontSize: 16),
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 40),
-
                 // GRID DE MODELOS
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -83,16 +82,14 @@ class ModelsPage extends StatelessWidget {
                         );
                       }
                       final docs = snapshot.data!.docs;
-
                       return GridView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        padding: const EdgeInsets.all(30),
+                        padding: const EdgeInsets.all(20),
                         gridDelegate:
                             const SliverGridDelegateWithMaxCrossAxisExtent(
                               maxCrossAxisExtent: 450,
-                              childAspectRatio:
-                                  0.85, // Ajuste para evitar efecto "estirado"
+                              childAspectRatio: 0.85,
                               mainAxisSpacing: 30,
                               crossAxisSpacing: 30,
                             ),
@@ -122,7 +119,9 @@ class ModelsPage extends StatelessWidget {
   }
 
   void _showDetails(BuildContext context, HouseModel house) {
-    int currentIndex = 0; // Índice local para los dots
+    int currentIndex = 0;
+    final size = MediaQuery.of(context).size;
+    final bool isMobile = size.width < 800;
 
     showDialog(
       context: context,
@@ -133,48 +132,50 @@ class ModelsPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
             ),
             clipBehavior: Clip.antiAlias,
-            child: SizedBox(
-              width: 950,
-              height: 600,
-              child: Row(
+            child: Container(
+              constraints: BoxConstraints(
+                maxWidth: 1000,
+                maxHeight: isMobile ? size.height * 0.85 : 600,
+              ),
+              child: Flex(
+                direction: isMobile ? Axis.vertical : Axis.horizontal,
                 children: [
-                  // LADO IZQUIERDO: CARRUSEL + DOTS
+                  // --- LADO DE IMAGEN (CARRUSEL) ---
                   Expanded(
-                    flex: 6,
+                    flex: isMobile ? 0 : 6,
                     child: Stack(
                       alignment: Alignment.bottomCenter,
                       children: [
                         Container(
+                          height: isMobile ? 250 : double.infinity,
                           color: Colors.black,
                           child: house.images.isEmpty
                               ? Image.network(house.imageUrl, fit: BoxFit.cover)
                               : CarouselSlider(
-                                  items: house.images.map((url) {
-                                    return Image.network(
-                                      url,
-                                      fit: BoxFit.contain,
-                                      width: double.infinity,
-                                    );
-                                  }).toList(),
+                                  items: house.images
+                                      .map(
+                                        (url) => Image.network(
+                                          url,
+                                          fit: BoxFit.contain,
+                                          width: double.infinity,
+                                        ),
+                                      )
+                                      .toList(),
                                   options: CarouselOptions(
-                                    height: 600,
+                                    height: isMobile ? 250 : 600,
                                     viewportFraction: 1.0,
                                     autoPlay: house.images.length > 1,
                                     autoPlayInterval: const Duration(
                                       seconds: 4,
                                     ),
-                                    onPageChanged: (index, reason) {
-                                      setState(() {
-                                        currentIndex = index;
-                                      });
-                                    },
+                                    onPageChanged: (index, reason) =>
+                                        setState(() => currentIndex = index),
                                   ),
                                 ),
                         ),
-                        // INDICADORES (DOTS)
                         if (house.images.length > 1)
                           Positioned(
-                            bottom: 20,
+                            bottom: 15,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: house.images.asMap().entries.map((
@@ -199,18 +200,19 @@ class ModelsPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  // LADO DERECHO: INFO
+                  // --- LADO DE INFORMACIÓN ---
                   Expanded(
-                    flex: 4,
-                    child: Padding(
-                      padding: const EdgeInsets.all(40),
+                    flex: isMobile ? 0 : 4,
+                    child: Container(
+                      padding: EdgeInsets.all(isMobile ? 20 : 40),
                       child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             house.name.toUpperCase(),
-                            style: const TextStyle(
-                              fontSize: 28,
+                            style: TextStyle(
+                              fontSize: isMobile ? 22 : 28,
                               fontWeight: FontWeight.w900,
                               color: AppColors.greyDark,
                             ),
@@ -219,18 +221,19 @@ class ModelsPage extends StatelessWidget {
                           Text(
                             "Desde Q${house.price}",
                             style: const TextStyle(
-                              fontSize: 24,
+                              fontSize: 22,
                               fontWeight: FontWeight.bold,
                               color: AppColors.primaryRed,
                             ),
                           ),
                           const Divider(height: 40),
-                          Expanded(
+                          // DESCRIPCIÓN CON SCROLL PROPIO
+                          Flexible(
                             child: SingleChildScrollView(
                               child: Text(
                                 house.description,
                                 style: const TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 15,
                                   height: 1.6,
                                   color: Colors.black87,
                                 ),

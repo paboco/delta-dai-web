@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../data/services/firebase_service.dart';
 import '../../../../data/models/web_content.dart';
 import '../../../shared/custom_navbar.dart';
+import '../../../shared/custom_drawer.dart'; // IMPORTANTE
 import '../../../shared/custom_footer.dart';
 import '../widgets/hero_section.dart';
 import '../widgets/info_section.dart';
@@ -14,6 +15,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: const CustomNavBar(),
+      drawer: const CustomDrawer(), // ESTO HACE QUE EL MENÚ FUNCIONE
       body: StreamBuilder(
         stream: FirebaseService().getWebContent(),
         builder: (context, snapshot) {

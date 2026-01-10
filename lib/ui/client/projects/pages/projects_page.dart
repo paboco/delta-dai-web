@@ -3,7 +3,7 @@ import 'package:delta_dai_bim_web/data/models/project_model.dart';
 import 'package:delta_dai_bim_web/data/services/firebase_service.dart';
 import 'package:delta_dai_bim_web/data/services/whatsapp_service.dart';
 import 'package:delta_dai_bim_web/ui/shared/custom_navbar.dart';
-
+import 'package:delta_dai_bim_web/ui/shared/custom_drawer.dart'; // IMPORTANTE
 import 'package:flutter/material.dart';
 
 class ProjectsPage extends StatelessWidget {
@@ -17,9 +17,9 @@ class ProjectsPage extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: const CustomNavBar(),
+      drawer: const CustomDrawer(), // ESTO HACE QUE EL MENÚ FUNCIONE
       body: Stack(
         children: [
-          // Fondo decorativo superior
           Container(
             width: double.infinity,
             height: 400,
@@ -31,14 +31,10 @@ class ProjectsPage extends StatelessWidget {
               ),
             ),
           ),
-
           SingleChildScrollView(
             child: Column(
               children: [
-                const SizedBox(
-                  height: 140,
-                ), // Espacio para el Navbar cristalino
-                // Encabezado de la página
+                const SizedBox(height: 140),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
@@ -62,10 +58,7 @@ class ProjectsPage extends StatelessWidget {
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 50),
-
-                // Listado en Zigzag
                 StreamBuilder<List<ProjectModel>>(
                   stream: _service.getProjects(),
                   builder: (context, snapshot) {
@@ -77,14 +70,12 @@ class ProjectsPage extends StatelessWidget {
                       );
                     }
                     final projects = snapshot.data ?? [];
-
                     return ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: projects.length,
                       itemBuilder: (context, index) {
                         final project = projects[index];
-                        // La clave del zigzag: par o impar
                         bool imageLeft = index % 2 == 0;
                         return _buildProjectRow(context, project, imageLeft);
                       },
@@ -108,7 +99,6 @@ class ProjectsPage extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     final bool isMobile = size.width < 900;
 
-    // Parte de la imagen con su sombra y borde
     Widget imagePart = Expanded(
       flex: isMobile ? 0 : 1,
       child: Container(
@@ -131,7 +121,6 @@ class ProjectsPage extends StatelessWidget {
       ),
     );
 
-    // Parte del texto informativa
     Widget textPart = Expanded(
       flex: isMobile ? 0 : 1,
       child: Padding(
@@ -179,12 +168,9 @@ class ProjectsPage extends StatelessWidget {
             ),
             const SizedBox(height: 30),
             OutlinedButton.icon(
-              onPressed: () {
-                _whatsappService.launchWhatsApp(
-                  modelName:
-                      "Proyecto: ${project.title} en ${project.location}",
-                );
-              },
+              onPressed: () => _whatsappService.launchWhatsApp(
+                modelName: "Proyecto: ${project.title} en ${project.location}",
+              ),
               icon: const Icon(Icons.chat_bubble_outline),
               label: const Text("MÁS INFORMACIÓN"),
               style: OutlinedButton.styleFrom(
@@ -204,7 +190,6 @@ class ProjectsPage extends StatelessWidget {
       ),
     );
 
-    // Si es móvil, apilamos verticalmente. Si es web, aplicamos el Zigzag.
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 40),
       child: isMobile
